@@ -3,8 +3,7 @@ from google import genai
 import os
 
 app = FastAPI()
-
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY", "ваш"))
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 @app.post("/")
 async def handle_salute_request(request: Request):
@@ -20,19 +19,25 @@ async def handle_salute_request(request: Request):
 
     try:
         response = client.models.generate_content(
-            model="gemini-3-flash-preview",
-            contents=user_message,
+            model="gemini-2.5-flash",
+            contents=user_message
         )
-        ai_text = response.text
+        answer_text = response.text
     except Exception as e:
-        ai_text = f"Ошибка: {str(e)}"
+        answer_text = f"Ошибка генерации: {str(e)}"
 
     return {
-        "suppress_speech": False,
-        "payload": {
-            "pronounce_text": ai_text,
-            "text": ai_text
+        "response": {
+            "text": answer_text,
+            "tts": answer_text,
+            "items": [
+                {
+                    "bubble": {
+                        "text": answer_text
+                    }
+                }
+            ]
         },
         "session": req_data.get("session", {}),
-        "version": req_data.get("version", "2.0")
+        "version": req_data.get("version", "1.0")
     }

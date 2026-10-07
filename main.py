@@ -34,7 +34,7 @@ async def handle_salute_request(request: Request):
     # --- Запрос к Gemini ---
     try:
         response = client.models.generate_content(
-            model="gemini-3.8-flash",
+            model="gemini-3.5-flash-lite",
             contents=user_message
         )
         answer_text = response.text or "Не удалось получить ответ"

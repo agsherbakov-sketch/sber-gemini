@@ -31,9 +31,9 @@ async def handle_salute_request(request: Request):
     # --- Запрос к Gemini ---
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=user_message
-        )
+    model="gemini-3.8-flash",
+    contents=user_message
+)
         answer_text = response.text or "Не удалось получить ответ"
     except Exception as e:
         answer_text = f"Произошла ошибка: {str(e)}"

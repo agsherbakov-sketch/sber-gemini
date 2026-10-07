@@ -8,6 +8,8 @@ client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 @app.post("/")
 async def handle_salute_request(request: Request):
     req_data = await request.json()
+    print("=== Входящий запрос ===")
+    print(req_data)
 
     # --- Извлекаем текст пользователя ---
     user_message = ""
@@ -27,6 +29,8 @@ async def handle_salute_request(request: Request):
     if not user_message:
         user_message = "Привет"
 
+    print(f"Текст пользователя: {user_message}")
+
     # --- Запрос к Gemini ---
     try:
         response = client.models.generate_content(
@@ -34,11 +38,12 @@ async def handle_salute_request(request: Request):
             contents=user_message
         )
         answer_text = response.text or "Не удалось получить ответ"
+        print(f"Ответ Gemini: {answer_text}")
     except Exception as e:
         answer_text = f"Произошла ошибка: {str(e)}"
+        print(f"Ошибка Gemini: {answer_text}")
 
-    # --- Правильный ответ в формате SmartApp API ---
-    return {
+    result = {
         "messageName": "ANSWER_TO_USER",
         "sessionId": req_data.get("sessionId"),
         "messageId": req_data.get("messageId", 0),
@@ -55,3 +60,7 @@ async def handle_salute_request(request: Request):
             ]
         }
     }
+
+    print("=== Отправляем ответ ===")
+    print(result)
+    return result
